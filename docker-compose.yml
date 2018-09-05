@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  ui:
+    image: portainer/portainer
+    environment:
+      SERVICE_443_ID: '${COMPOSE_PROJECT_NAME}_ui_https'
+      SERVICE_443_NAME: '${COMPOSE_PROJECT_NAME}_ui_https'
+      SERVICE_443_TAGS: 'proxy.enable=true,proxy.tags=external,proxy.frontend.entryPoints=https,proxy.frontend.rule=Host:${UI_HOST}'
+      SERVICE_80_ID: '${COMPOSE_PROJECT_NAME}_ui_http'
+      SERVICE_80_NAME: '${COMPOSE_PROJECT_NAME}_ui_http'
+      SERVICE_80_TAGS: 'proxy.enable=true,proxy.tags=external,proxy.frontend.entryPoints=http,proxy.frontend.rule=Host:${UI_HOST}'
+    command: -H unix:///var/run/docker.sock
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ui_data:/data
+
+volumes:
+  ui_data:
+    driver: local
+
+networks:
+  default:
+    external:
+      name: '${NETWORK}'
